@@ -24,10 +24,10 @@ start:
 	FIQAddr:        .word FIQHandler
 
 reset:
-	/*@
+	@
 	@ Program architected timer frequency
 	@
-	mrc	p15, 0, r0, c0, c1, 1		@ CPUID_EXT_PFR1
+	/*mrc	p15, 0, r0, c0, c1, 1		@ CPUID_EXT_PFR1
 	lsr	r0, r0, #16
 	and	r0, r0, #1			@ Check generic timer support
 	beq	1f
@@ -60,24 +60,10 @@ reset:
 	LDR r0, =start
 	MCR p15, 0, r0, c12, c0, 0
 
-hvc #0
-hvc #0
-hvc #0
-#smc #0
-#CPS #0x10
-#swi #0
 	@ And call the C entrypoint
 	bl      c_start
 	@ Never reached
 1:	b 1b
-
-	@
-	@ Function for C code to make semihosting calls:
-	@
-#.globl __semi_call
-#__semi_call:
-#	svc     0x123456
-#	mov pc, lr
 
 @------------------------------------------------------------
 @ Vector handler

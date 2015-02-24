@@ -16,6 +16,12 @@ typedef unsigned char u8;
 #define Mode_HYP 0x1A
 #define Mode_MON 0x16
 
+#define REASON_UNKNOWN  0x00
+#define REASON_MCR_CP15 0x03
+#define REASON_SVC      0x11
+#define REASON_HVC      0x12
+#define REASON_SMC      0x13
+
 struct cpu_t
 {
 	//general registers

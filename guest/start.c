@@ -88,13 +88,29 @@ void cprintf(char *fmt, ...)
 
 void swi_handler()
 {
-	cprintf("swi handler!\n");
+	cprintf("[GUEST] Handle SWI instruction\n");
 }
 
 void c_start(void)
 {
-	printstr("hello1\n");
+	printstr("[GUEST] Guest OS is booted\n");
+
+	// guest call hypervisor call
+	cprintf("[GUEST] Call HVC instruction\n");
+	asm volatile(".arch_extension virt\n"
+				"hvc #0");
+	cprintf("[GUEST] Finish HVC instruction\n");
+
+	// guest call system call
+	cprintf("[GUEST] Call SWI instruction\n");
 	asm volatile("swi #7");
-	cprintf("It is working!\n");
+	cprintf("[GUEST] Finish SWI instruction\n");
+	
+	// guest call smc call
+	cprintf("[GUEST] Call SMC instruction\n");
+	asm volatile(".arch_extension sec\n"
+				"smc #0");
+	cprintf("[GUEST] Finish SMC instruction\n");
+
 	while(1);
 }

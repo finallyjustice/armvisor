@@ -27,10 +27,6 @@ hypervisor_vector:
 	b .
 
 hyp_reset_handler:
-	ldr r0, =0x1c090000 @ UART base (Versatile Express)
-	mov r1, #'O'        
-	str r1, [r0, #0x00] @ Tx Test
-
 	// Set hypervisor mode stack pointer
 	ldr sp,=hyp_stack_top
 
@@ -69,21 +65,13 @@ hyp_reset_handler:
 	MRC     p15, 4, r0, c1, c1, 0     //   ; Read HCR
 	ORR     r0, r0, #(1 << 19)        //   ; Set the HCR.TSC (bit 19) to enable SMC trapping
 	ORR     r0, r0, #1                //   ; Set the HCR.VM (bit 0) to enable stage 2 translation
-#ORR     r0, r0, #(1 << 27)        //   ; Set the HCR.TGE (bit 27) to enable SVC trapping
+	ORR     r0, r0, #(1 << 27)        //   ; Set the HCR.TGE (bit 27) to enable SVC trapping
 	MCR     p15, 4, r0, c1, c1, 0     //   ; Write HCR
 
-	ldr r0, =0x1c090000 @ UART base (Versatile Express)
-	mov r1, #'K'        
-	str r1, [r0, #0x00] @ Tx Test
-	mov r1, #'\n'       
-	str r1, [r0, #0x00] @ Tx Test
-	mov r1, #'\r'       
-	str r1, [r0, #0x00] @ Tx Test
-	
 	b hypervisor_main
 
-.globl copy_guest
-copy_guest:
+.globl guest_setup
+guest_setup:
 	LDR     r0, =0x80008000   // destination
 	LDR     r1, =os_image                       // Beginning of source data
 	LDR     r2, =os_image_end                         //End of source data
@@ -94,9 +82,8 @@ hyp_copy_guest_loop:
 	blt     hyp_copy_guest_loop
 	mov pc, lr
 	
-//void guest_start()
-.globl guest_start
-guest_start:
+.globl guest_boot
+guest_boot:
 	ldr r11, =0x80008000
 	msr     elr_hyp, r11
 	msr spsr_cxsf, #Mode_SVC
@@ -113,8 +100,11 @@ hyp_handler:
 	ldr r0, =reason
 	mrc p15, 4, r1, c5, c2, 0
 	str r1, [r0, #0x00]
-	ldr r0, =ret_addr
-	str lr, [r0, #0x00]
+	ldr r0, =ret_addr		
+	mrs r1, elr_hyp
+	str r1, [r0, #0x00]
+#add r1, #0x4
+#msr elr_hyp, r1
 
 	bl do_hvc_handler
 	ldr r12, =vcpu

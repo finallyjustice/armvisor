@@ -72,9 +72,6 @@ start:
 	@ for CPU 0 so we can write most of this in C.
 	ldr     sp, =stacktop
 	
-	//bl hypervisor_main
-	//b .
-
 	# change stack for monitor mode
 	cps #Mode_MON
 	ldr sp, =monitor_stack_top
@@ -92,17 +89,6 @@ start:
 	bic r1, r1, #(1 << 7)       //Clear SCR.SCD
 	orr r1, r1, #(1 << 8)       //Set SCR.HCE (HVC in Non-Secure kernel modes causes move to Hyp mode)
 	mcr p15, 0, r1, c1, c1, 0   //Write
-
-#ldr r0, =0x1c090000 @ UART base (Versatile Express)
-#mov r1, #'O'        
-#str r1, [r0, #0x00] @ Tx Test
-#mov r1, #'K'    
-#str r1, [r0, #0x00] @ Tx Test
-#mov r1, #'\n'       
-#str r1, [r0, #0x00] @ Tx Test
-#mov r1, #'\r'       
-#str r1, [r0, #0x00] @ Tx Test
-#b .
 
 	//Set up HVBAR
 	LDR     r0, =hypervisor_vector
