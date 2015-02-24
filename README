@@ -1,0 +1,7 @@
+This is a sample ARM hardware virtualization code on Fast Models (Cortex A15x1)
+
+To run Fast Models with the program, run:
+make
+sh run.sh
+
+For any question, please contact Dongli Zhang (dongli.zhang0129@gmail.com)
