@@ -61,8 +61,11 @@ reset:
 	MCR p15, 0, r0, c12, c0, 0
 
 hvc #0
-smc #0
-#svc #0
+hvc #0
+hvc #0
+#smc #0
+#CPS #0x10
+#swi #0
 	@ And call the C entrypoint
 	bl      c_start
 	@ Never reached

@@ -110,6 +110,12 @@ hyp_handler:
 	pop {r0}
 	stmia r12!, {r0, lr}
 
+	ldr r0, =reason
+	mrc p15, 4, r1, c5, c2, 0
+	str r1, [r0, #0x00]
+	ldr r0, =ret_addr
+	str lr, [r0, #0x00]
+
 	bl do_hvc_handler
 	ldr r12, =vcpu
 	ldmia r12!, {r0-r11}
